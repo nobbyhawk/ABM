@@ -5,9 +5,9 @@ Load when instantiating environment variable
 '''
 
 environ = {
-    'num_criminals':      30,  # number of criminals
+    'num_criminals':      10,  # number of criminals
     'num_civilians':      100,
-    'num_police':         30,
+    'num_police':         10,
     'resources_init_max_for_criminal': 25,
     'resources_init_max_for_civilian': 100,
     'crime_propensity_init_max': 25,

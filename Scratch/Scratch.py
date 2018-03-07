@@ -109,6 +109,10 @@ ax1.invert_yaxis()
 ax1.set_aspect(1)
 plt.show()
 
+plt.title("Civilian 0's location average")
+plt.imshow(single_loc, cmap='hot')
+plt.show()
+
 # Police information heatmaps
 f, (ax1, ax2, ax3) = plt.subplots(1, 3, sharey=True)
 ax1.imshow(init_police_location, cmap='hot', aspect='auto')

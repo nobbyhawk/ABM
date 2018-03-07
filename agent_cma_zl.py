@@ -144,6 +144,9 @@ class Agent(object):
         # This is from Zhen's code in crime.py
         # randomly move if memory is NULL
 
+        def wrap(x_pos, y_pos):
+            x, y = x_pos % (width + 1), y_pos % (height + 1)
+            return x,y
 
         # Nobblitt - addition for moving too specific location if specified - warning - no error checking
         if x is not None and y is not None:
@@ -156,17 +159,17 @@ class Agent(object):
         if len(self.memory) == 0:
             while True:
                 d = random.sample([1, 2, 3, 4], 1)[0]
-                if d == 1 and self.x > 0:
-                    self.x += -1
+                if d == 1:
+                    self.x = wrap(self.x + 1, self.y)[0]
                     return
-                if d == 2 and self.y > 0:
-                    self.y += -1
+                if d == 2:
+                    self.y = wrap(self.x, self.y + 1)[1]
                     return
-                if d == 3 and self.x < width:
-                    self.x += 1
+                if d == 3:
+                    self.x = wrap(self.x - 1, self.y)[0]
                     return
-                if d == 4 and self.y < height:
-                    self.y += 1
+                if d == 4:
+                    self.y = wrap(self.x, self.y - 1)[1]
                     return
 
         # if memory is not NULL
@@ -176,10 +179,10 @@ class Agent(object):
             criminals_near = self.look_for_agents(agent_role=Agent.Role.CRIMINAL, agents_list=self.memory, cell_radius=vision_radius)
 
             # Possible directions to move in
-            north, east, south, west = self.y < height, self.x < width, self.y > 0, self.x > 0
+            north, east, south, west = True, True, True, True
             # FIXME Replace Constant with Config for vision limit
             for criminal in criminals_near:
-                # Essentially checking if distance is 1 in all cardinal directions
+                # Essentially checking if criminals are vision_radius in all cardinal directions
                 if 0 < (criminal.y - self.y) <= vision_radius: north = False
                 if -vision_radius <= (criminal.y - self.y) < 0: south = False
                 if 0 < (criminal.x - self.x) <= vision_radius: east = False
@@ -188,23 +191,23 @@ class Agent(object):
             # If north = True, it is possible to move north
             possible_directions = [north, east, south, west]
 
-
             try:
                 # Choose a direction at random, given that it is possible
                 weight = sum(possible_directions)
                 if weight == 0 : return  # no where to go to
-                direction = np.random.choice([1,2,3,4], 1, p=[x / weight for x in possible_directions])
-                if direction == 1:
-                    self.y += 1
+
+                d = np.random.choice([1,2,3,4], 1, p=[x / weight for x in possible_directions])
+                if d == 1:
+                    self.x = wrap(self.x + 1, self.y)[0]
                     return
-                if direction == 2:
-                    self.x += 1
+                if d == 2:
+                    self.y = wrap(self.x, self.y + 1)[1]
                     return
-                if direction == 3:  # South
-                    self.y += -1
+                if d == 3:
+                    self.x = wrap(self.x - 1, self.y)[0]
                     return
-                if direction == 4: # West
-                    self.x += -1
+                if d == 4:
+                    self.y = wrap(self.x, self.y - 1)[1]
                     return
             except ValueError as e:
                 print(str(e))
